@@ -7,7 +7,7 @@ from api.auth import verify_api_key
 from job_queue.utils import create_job
 
 from job_queue.producer import enqueue_job
-
+from job_queue.job_store import init_job_status, get_job_status
 
 
 app = FastAPI()
@@ -24,11 +24,11 @@ async def infer(
 ):
     job = create_job(request.input, request.model_id)
     enqueue_job(job)
-    return JSONResponse(content={"request_id": job["request_id"], "status": "queued"}, status_code=200)
+    return JSONResponse(content={"request_id": job.request_id, "status": "queued"}, status_code=200)
 
 @app.get("/result/{request_id}")
 async def get_result(request_id: str):
-    return {"result": "queued"}
+    return get_job_status(request_id)
 
 if __name__ == "__main__":
     uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)
