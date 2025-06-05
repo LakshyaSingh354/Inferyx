@@ -4,6 +4,7 @@ import time
 from job_queue.job_store import mark_job_processing, mark_job_done, mark_job_failed
 from job_queue.redis_client import get_redis_client
 from model.infer import infer_batch
+from metrics.metrics import jobs_processed_total, jobs_failure_total, batches_processed_total, batch_size_hist, inference_latency
 
 r = get_redis_client()
 
@@ -38,14 +39,20 @@ def batching_loop():
                 for job in batch:
                     mark_job_processing(job["request_id"])
                 inputs = [job["input"] for job in batch]
+                start = time.time()
                 results = infer_batch(inputs)
+                inference_latency.observe(time.time() - start)
 
                 for job, result in zip(batch, results):
                     mark_job_done(job["request_id"], result)
+                    jobs_processed_total.inc(len(batch))
+                batches_processed_total.inc()
+                batch_size_hist.observe(len(batch))
             except Exception as e:
                 print(f"[Batching Engine] Error processing batch: {e}")
                 for job in batch:
                     mark_job_failed(job["request_id"])
+                    jobs_failure_total.inc(len(batch))
 
 if __name__ == "__main__":
     batching_loop()
