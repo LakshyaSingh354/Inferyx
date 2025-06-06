@@ -48,6 +48,14 @@ def mark_job_failed(request_id: str, error: str = "error"):
         "result": error
     })
 
+def mark_job_skipped(request_id: str):
+    """
+    Update job status to skipped.
+    """
+    r.hset(f"job:{request_id}", mapping={
+        "status": "skipped",
+        "result": ""
+    })
 def get_job_status(request_id: str):
     """
     Fetch status and result of a job.

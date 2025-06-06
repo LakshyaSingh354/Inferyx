@@ -3,8 +3,6 @@ import shutil
 
 PROMETHEUS_MULTIPROC_DIR = "/tmp/prometheus_multiproc"
 os.environ["PROMETHEUS_MULTIPROC_DIR"] = PROMETHEUS_MULTIPROC_DIR
-# shutil.rmtree(PROMETHEUS_MULTIPROC_DIR, ignore_errors=True)
-# os.makedirs(PROMETHEUS_MULTIPROC_DIR, exist_ok=True)
 
 from fastapi import FastAPI, Request, Response, Depends
 from model.infer import infer_batch, InferenceFailure

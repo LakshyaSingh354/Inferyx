@@ -1,10 +1,10 @@
 import json
 import time
 
-from job_queue.job_store import mark_job_waiting, mark_job_done, mark_job_failed
+from job_queue.job_store import mark_job_waiting, mark_job_done, mark_job_failed, mark_job_skipped
 from job_queue.redis_client import get_redis_client
 from model.infer import infer_batch
-from metrics.metrics import jobs_processed_total, jobs_failure_total, batches_processed_total, batch_size_hist, inference_latency, inference_queue_size_gauge, worker_queue_size_gauge
+from metrics.metrics import jobs_processed_total, jobs_failure_total, batches_processed_total, batch_size_hist, inference_latency, inference_queue_size_gauge, worker_queue_size_gauge, jobs_skipped_total  
 
 r = get_redis_client()
 
@@ -12,6 +12,7 @@ INFERENCE_QUEUE_KEY = "inference_queue"
 WORKER_QUEUE_KEY = "worker_queue"
 MAX_BATCH_SIZE = 4
 MAX_WAIT_TIME = 1.0
+MAX_WORKER_QUEUE_SIZE = 150
 
 def batching_loop():
     print("[Batching Engine] Starting batching loop...")
@@ -39,7 +40,16 @@ def batching_loop():
             try:
                 for job in batch:
                     mark_job_waiting(job["request_id"])
-                r.rpush(WORKER_QUEUE_KEY, json.dumps(batch))
+                if r.llen(WORKER_QUEUE_KEY) < MAX_WORKER_QUEUE_SIZE:
+                    r.rpush(WORKER_QUEUE_KEY, json.dumps(batch))
+                else:
+                    print(f"[Batching Engine] Worker queue is full, skipping batch of {len(batch)} jobs")
+                    for job in batch:
+                        mark_job_skipped(job["request_id"])
+                        log_file = open("skipped_jobs.log", "a")
+                        log_file.write(f"{job['request_id']}\n")
+                        log_file.close()
+                        jobs_skipped_total.inc(len(batch))
                 batch_size_hist.observe(len(batch))
                 batches_processed_total.inc()
             except Exception as e:
