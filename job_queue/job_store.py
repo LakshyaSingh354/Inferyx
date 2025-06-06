@@ -12,6 +12,15 @@ def init_job_status(request_id: str):
         "result": ""
     })
 
+def mark_job_waiting(request_id: str):
+    """
+    Update job status to waiting.
+    """
+    r.hset(f"job:{request_id}", mapping={
+        "status": "waiting",
+        "result": ""
+    })
+
 def mark_job_processing(request_id: str):
     """
     Update job status to processing.

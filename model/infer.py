@@ -15,8 +15,9 @@ def infer_batch(batch_inputs, model_id="mock"):
     Returns:
         List[str] (mocked outputs)
     """
-    # Simulate variable latency (e.g., 3-8 seconds)
-    processing_time = random.uniform(3, 8)
+    print(f"[Model] Inferring batch of {len(batch_inputs)} inputs")
+    # Simulate variable latency (e.g., 10-20 seconds)
+    processing_time = random.uniform(2, 5)
     time.sleep(processing_time)
 
     # Simulate GPU-style memory limit (e.g., max 4 inputs)

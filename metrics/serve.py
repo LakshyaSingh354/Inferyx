@@ -1,18 +1,21 @@
-from prometheus_client import start_http_server
+import os
+import shutil
+from prometheus_client import start_http_server, CollectorRegistry, multiprocess, generate_latest
 import time
 
 from job_queue.redis_client import get_redis_client
-from metrics.metrics import queue_size_gauge
+from metrics.metrics import inference_queue_size_gauge, worker_queue_size_gauge
 
 r = get_redis_client()
 
 def start_metrics_server():
     print("[Metrics] Starting Prometheus exporter at :8080/metrics")
-    start_http_server(8080)
+    if "PROMETHEUS_MULTIPROC_DIR" in os.environ:
+        registry = CollectorRegistry()
+        multiprocess.MultiProcessCollector(registry)
+    else:
+        registry = None
+    start_http_server(8080, registry=registry if registry else None)
     while True:
-        try:
-            qlen = r.llen("inference_queue")
-            queue_size_gauge.set(qlen)
-        except:
-            pass
-        time.sleep(1)
+        inference_queue_size_gauge.set(r.llen("inference_queue"))
+        worker_queue_size_gauge.set(r.llen("worker_queue"))
