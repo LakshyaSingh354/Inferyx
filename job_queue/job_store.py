@@ -48,6 +48,17 @@ def mark_job_failed(request_id: str, error: str = "error"):
         "result": error
     })
 
+def mark_job_retry(request_id: str, retry_count: int, next_retry_time: int):
+    """
+    Update job status to retry.
+    """
+    r.hset(f"job:{request_id}", mapping={
+        "status": "retry",
+        "result": "",
+        "retry_count": retry_count,
+        "next_retry_time": next_retry_time
+    })
+
 def mark_job_skipped(request_id: str):
     """
     Update job status to skipped.
@@ -66,7 +77,7 @@ def get_job_status(request_id: str):
         return JSONResponse(content={"status": "not_found"}, status_code=404)
     return data
 
-def expire_job(request_id: str, ttl_seconds: int = 3600):
+def expire_job(request_id: str, ttl_seconds: int = 60):
     """
     Optional: set expiry for job metadata
     """

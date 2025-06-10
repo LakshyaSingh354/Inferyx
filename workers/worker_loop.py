@@ -5,6 +5,7 @@ from model.infer import InferenceFailure, infer_batch
 from job_queue.job_store import mark_job_processing, mark_job_done, mark_job_failed
 from job_queue.redis_client import get_redis_client
 from metrics.metrics import inference_latency, jobs_processed_total, jobs_failure_total, worker_queue_size_gauge, worker_status_gauge
+from retry.retry import handle_job_failure
 
 r = get_redis_client()
 
@@ -41,17 +42,18 @@ def worker_loop(worker_id):
                 print(f"[Worker-{worker_id}] OOM error")
                 for job in batch:
                     mark_job_failed(job["request_id"], "OOM error")
+                    handle_job_failure(job)
                 jobs_failure_total.inc(len(batch))
             except InferenceFailure as e:
                 print(f"[Worker-{worker_id}] Inference failed: {str(e)}")
                 for job in batch:
                     mark_job_failed(job["request_id"], "Inference failed [MOCK]")
+                    handle_job_failure(job)
                 jobs_failure_total.inc(len(batch))
             except Exception as e:
                 print(f"[Worker-{worker_id}] Inference failed: {str(e)}")
                 for job in batch:
                     mark_job_failed(job["request_id"], "Inference failed [UNKNOWN]")
-        
         except Exception as e:
             print(f"[Worker-{worker_id}] Fatal error: {str(e)}")
             r.set(worker_key, json.dumps({"status": "error", "timestamp": time.time(), "error": str(e)}))

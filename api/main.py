@@ -21,6 +21,7 @@ from metrics.serve import start_metrics_server
 from contextlib import asynccontextmanager
 from workers.worker_pool import start_worker_pool
 import sys
+from retry.retry_worker import retry_worker_loop
 
 # logfile = open("output.log", "a")
 # sys.stdout = logfile
@@ -34,6 +35,7 @@ async def lifespan(app: FastAPI):
     threading.Thread(target=start_metrics_server, daemon=True).start()
     threading.Thread(target=batching_loop, daemon=True).start()
     threading.Thread(target=start_worker_pool, daemon=True).start()
+    threading.Thread(target=retry_worker_loop, daemon=True).start()
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -48,9 +50,11 @@ async def infer(
     api_key: str = Depends(verify_api_key)
 ):
     job = create_job(request.input, request.model_id)
-    enqueue_job(job)
-    print("Incrementing inference requests total")
-    inference_requests_total.inc()
+    if enqueue_job(job):
+        print("Incrementing inference requests total")
+        inference_requests_total.inc()
+    else:
+        return JSONResponse(content={"request_id": job.request_id, "status": "skipped"}, status_code=429)
     return JSONResponse(content={"request_id": job.request_id, "status": "queued"}, status_code=200)
 
 

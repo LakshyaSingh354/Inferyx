@@ -4,7 +4,7 @@ from prometheus_client import start_http_server, CollectorRegistry, multiprocess
 import time
 
 from job_queue.redis_client import get_redis_client
-from metrics.metrics import inference_queue_size_gauge, worker_queue_size_gauge
+from metrics.metrics import inference_queue_size_gauge, worker_queue_size_gauge, retry_queue_size_gauge
 
 r = get_redis_client()
 
@@ -19,3 +19,5 @@ def start_metrics_server():
     while True:
         inference_queue_size_gauge.set(r.llen("inference_queue"))
         worker_queue_size_gauge.set(r.llen("worker_queue"))
+        retry_queue_size_gauge.set(r.llen("retry_queue"))
+        time.sleep(1)

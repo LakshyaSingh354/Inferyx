@@ -1,7 +1,7 @@
 from multiprocessing import Process
 from workers.worker_loop import worker_loop
 
-MAX_WORKERS = 6
+MAX_WORKERS = 4
 
 
 def start_worker_pool():

@@ -25,7 +25,7 @@ def infer_batch(batch_inputs, model_id="mock"):
         raise MemoryError("Simulated OOM: batch too large for mock model")
 
     # Simulate occasional model failure (10% failure chance)
-    if random.random() < 0.1:
+    if random.random() < 0.8:
         raise InferenceFailure("Mock inference failure")
 
     # Mocked output: just echoing uppercase + model_id
