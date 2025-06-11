@@ -2,20 +2,25 @@ import requests
 import time
 import random
 import threading
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 url = "http://localhost:8000/infer"
 headers = {"Authorization": "Bearer 1234567890"}
 
-total_requests = 10000
+total_requests = 1000
 base_rps_range = (10, 15)  # requests per second
 spike_rps_range = (30, 50)
 spike_chance_per_second = 0.05  # ~2% chance per second to spike
 spike_duration_range = (2, 5)  # seconds
 
 def send_request(i):
-    data = {"input": f"test input {i}", "model_id": "mock"}
+    sample_test_inputs = ["test input", "test input 2", "test input 3", "test input 4", "test input 5"]
+    data = {"input": random.choice(sample_test_inputs), "model_id": "mock"} if random.random() < 0.7 else {"input": f"test input {i*random.random()/random.random()}", "model_id": "mock"}
     try:
-        requests.post(url, json=data, headers=headers, timeout=2)
+        response = requests.post(url, json=data, headers=headers, timeout=2)
     except Exception as e:
         pass  # Optionally log errors
 
@@ -25,7 +30,7 @@ while i < total_requests:
     if random.random() < spike_chance_per_second:
         spike_rps = random.randint(*spike_rps_range)
         spike_duration = random.randint(*spike_duration_range)
-        print(f"Spike! {spike_rps} rps for {spike_duration}s")
+        logger.info(f"Spike! {spike_rps} rps for {spike_duration}s")
         for _ in range(spike_duration):
             threads = []
             for _ in range(spike_rps):
@@ -37,7 +42,7 @@ while i < total_requests:
                 i += 1
             for t in threads:
                 t.join()
-            print(f"Processed {i} requests", end="\r")
+            logger.info(f"Processed {i} requests")
             time.sleep(1)
     else:
         base_rps = random.randint(*base_rps_range)
@@ -51,5 +56,5 @@ while i < total_requests:
             i += 1
         for t in threads:
             t.join()
-        print(f"Processed {i} requests", end="\r")
+        logger.info(f"Processed {i} requests")
         time.sleep(1)

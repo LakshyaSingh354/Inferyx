@@ -27,3 +27,6 @@ retries_total = Counter("retries_total", "Total number of job retries", registry
 retry_queue_size_gauge = Gauge("retry_queue_size_gauge", "Current size of the retry queue", registry=registry if registry else None)
 
 retry_count_hist = Histogram("retry_count_hist", "Histogram of retry counts per job", registry=registry if registry else None)
+
+cache_hits_total = Counter("cache_hits_total", "Total number of cache hits", registry=registry if registry else None)
+cache_misses_total = Counter("cache_misses_total", "Total number of cache misses", registry=registry if registry else None)

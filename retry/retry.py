@@ -8,8 +8,8 @@ from metrics.metrics import retries_total, jobs_failed_after_retries_total, retr
 r = get_redis_client()
 
 MAX_RETRIES = 3
-RETRY_BACKOFF_SECONDS = 5
-MAX_BACKOFF_SECONDS = 60  # 5 minutes, for example
+RETRY_BACKOFF_SECONDS = 2
+MAX_BACKOFF_SECONDS = 30  # 5 minutes, for example
 
 def handle_job_failure(job):
     if job.get("retry_count", 0) < MAX_RETRIES:

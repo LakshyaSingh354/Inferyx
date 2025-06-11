@@ -1,11 +1,13 @@
 import json
 import time
+import logging
 
-from job_queue.job_store import mark_job_waiting, mark_job_done, mark_job_failed, mark_job_skipped
+from job_queue.job_store import mark_job_waiting, mark_job_failed
 from job_queue.redis_client import get_redis_client
-from model.infer import infer_batch
-from metrics.metrics import jobs_processed_total, jobs_failure_total, batches_processed_total, batch_size_hist, inference_latency, inference_queue_size_gauge, worker_queue_size_gauge, jobs_skipped_total  
+from metrics.metrics import jobs_failure_total, batches_processed_total, batch_size_hist
 from retry.retry import handle_job_failure
+
+logger = logging.getLogger(__name__)
 
 r = get_redis_client()
 
@@ -14,7 +16,7 @@ WORKER_QUEUE_KEY = "worker_queue"
 MAX_BATCH_SIZE = 4
 MAX_WAIT_TIME = 1.0
 def batching_loop():
-    print("[Batching Engine] Starting batching loop...")
+    logger.info("[Batching Engine] Starting batching loop...")
     while True:
         batch = []
         start_time = time.time()
@@ -26,7 +28,7 @@ def batching_loop():
                     job = json.loads(job_str)
                     batch.append(job)
                 except Exception as e:
-                    print(f"[Batching Engine] Error parsing job: {e}")
+                    logger.error(f"[Batching Engine] Error parsing job: {e}")
 
             else:
                 time.sleep(0.01)
@@ -35,7 +37,7 @@ def batching_loop():
                 break
 
         if batch:
-            print(f"[Batching Engine] Batching {len(batch)} jobs...")
+            logger.info(f"[Batching Engine] Batching {len(batch)} jobs...")
             try:
                 for job in batch:
                     mark_job_waiting(job["request_id"])
@@ -43,7 +45,7 @@ def batching_loop():
                 batch_size_hist.observe(len(batch))
                 batches_processed_total.inc()
             except Exception as e:
-                print(f"[Batching Engine] Error processing batch: {e}")
+                logger.error(f"[Batching Engine] Error processing batch: {e}")
                 for job in batch:
                     mark_job_failed(job["request_id"])
                     jobs_failure_total.inc(len(batch))
