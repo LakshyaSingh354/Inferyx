@@ -10,10 +10,10 @@ logging.basicConfig(level=logging.INFO)
 url = "http://localhost:8000/infer"
 headers = {"Authorization": "Bearer 1234567890"}
 
-total_requests = 1000
-base_rps_range = (10, 15)  # requests per second
+total_requests = 2500
+base_rps_range = (5, 10)  # requests per second
 spike_rps_range = (30, 50)
-spike_chance_per_second = 0.05  # ~2% chance per second to spike
+spike_chance_per_second = 0.1  # ~10% chance per second to spike
 spike_duration_range = (2, 5)  # seconds
 
 def send_request(i):

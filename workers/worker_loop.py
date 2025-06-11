@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import json
 import time
 import redis
@@ -29,12 +30,14 @@ def worker_loop(worker_id):
             inputs = [job["input"] for job in batch]
             model_id = batch[0]["model_id"]
             try:
-                start_time = time.time()
                 outputs = infer_batch(inputs, model_id)
                 for job, output in zip(batch, outputs):
+                    job_start_time = datetime.fromisoformat(job["timestamp"])
+                    job_end_time = datetime.now(timezone.utc)
+
+                    inference_latency.observe((job_end_time - job_start_time).total_seconds())
+                    # print(f"[Worker-{worker_id}] Inference latency: {(job_end_time - job_start_time).total_seconds()}")
                     mark_job_done(job["request_id"], output)
-                inference_latency.observe(time.time() - start_time)
-                logger.info(f"[Worker-{worker_id}] Inference latency: {time.time() - start_time}")
                 jobs_processed_total.inc(len(batch))
 
             except MemoryError as e:
@@ -51,6 +54,7 @@ def worker_loop(worker_id):
                 jobs_failure_total.inc(len(batch))
             except Exception as e:
                 logger.error(f"[Worker-{worker_id}] Inference failed: {str(e)}")
+                print(e)
                 for job in batch:
                     mark_job_failed(job["request_id"], "Inference failed [UNKNOWN]")
         except Exception as e:

@@ -22,6 +22,7 @@ def handle_job_failure(job):
             request_id=job["request_id"],
             input=job["input"],
             model_id=job["model_id"],
+            timestamp=job["timestamp"],
             retry_count=retry_count,
             next_retry_time=int(time.time()) + backoff
         )

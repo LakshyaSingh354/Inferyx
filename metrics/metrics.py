@@ -7,6 +7,13 @@ if "PROMETHEUS_MULTIPROC_DIR" in os.environ:
 else:
     registry = None
 
+buckets=[
+    0.1, 0.25, 0.5, 0.75, 1,
+    1.5, 2, 3, 5, 7.5,
+    10, 15, 20, 30, 45, 60, 70, 80, 90, 100, 120, 150, 170, 200, 250, 300
+]
+
+
 inference_requests_total = Counter("inference_requests_total", "Total number of inference requests", registry=registry if registry else None)
 jobs_processed_total = Counter("jobs_processed_total", "Total number of jobs processed", registry=registry if registry else None)
 batches_processed_total = Counter("batches_processed_total", "Total number of batches processed", registry=registry if registry else None)
@@ -15,7 +22,7 @@ jobs_skipped_total = Counter("jobs_skipped_total", "Total number of jobs skipped
 jobs_failed_after_retries_total = Counter("jobs_failed_after_retries_total", "Jobs failed after all retries", registry=registry if registry else None)
 
 batch_size_hist = Histogram("batch_size_hist", "Histogram of batch sizes", registry=registry if registry else None)
-inference_latency = Histogram("inference_latency_seconds", "Latency of inference requests", registry=registry if registry else None)
+inference_latency = Histogram("inference_latency_seconds", "Latency of inference requests", registry=registry if registry else None, buckets=buckets)
 
 inference_queue_size_gauge = Gauge("inference_queue_size_gauge", "Size of the inference queue", registry=registry if registry else None)
 worker_queue_size_gauge = Gauge("worker_queue_size_gauge", "Size of the worker queue", registry=registry if registry else None)

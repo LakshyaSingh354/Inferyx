@@ -34,7 +34,7 @@ logging.getLogger("inferyx").setLevel(logging.INFO)
 logging.getLogger("batch.batching_engine").setLevel(logging.WARNING)
 logging.getLogger("metrics.serve").setLevel(logging.WARNING)
 logging.getLogger("workers.worker_pool").setLevel(logging.INFO)
-logging.getLogger("workers.worker_loop").setLevel(logging.INFO)
+# logging.getLogger("workers.worker_loop").setLevel(logging.INFO)
 
 
 dotenv.load_dotenv()
