@@ -31,6 +31,7 @@ def worker_loop(worker_id):
             model_id = batch[0]["model_id"]
             try:
                 outputs = infer_batch(inputs, model_id)
+                print("OUTPUTS RECEIVED")
                 for job, output in zip(batch, outputs):
                     job_start_time = datetime.fromisoformat(job["timestamp"])
                     job_end_time = datetime.now(timezone.utc)
@@ -60,7 +61,6 @@ def worker_loop(worker_id):
         except Exception as e:
             logger.error(f"[Worker-{worker_id}] Fatal error: {str(e)}")
             r.set(worker_key, json.dumps({"status": "error", "timestamp": time.time(), "error": str(e)}))
-            time.sleep(2)  # optional cooldown
         finally:
             r.set(worker_key, json.dumps({"status": "idle", "timestamp": time.time()}))
             worker_status_gauge.labels(worker_id=worker_id).set(0)  # idle

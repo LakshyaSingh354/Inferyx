@@ -30,7 +30,7 @@ def mark_job_processing(request_id: str):
         "result": ""
     })
 
-def mark_job_done(request_id: str, result: str):
+def mark_job_done(request_id: str, result: str | dict):
     """
     Update job status to done and store result.
     """

@@ -50,7 +50,6 @@ def batching_loop():
                     mark_job_failed(job["request_id"])
                     jobs_failure_total.inc(len(batch))
                     handle_job_failure(job)
-        time.sleep(0.25)
 
 if __name__ == "__main__":
     batching_loop()

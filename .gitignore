@@ -19,3 +19,4 @@ wheels/
 dump.rdb
 data
 *.log
+onnx/
