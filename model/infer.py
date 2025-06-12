@@ -46,7 +46,7 @@ def infer_batch(batch_inputs, model_id="mock"):
         # Mocked output: just echoing uppercase + model_id
         outputs = [f"[{model_id}] " + input_text.upper() for input_text in batch_inputs]
         return outputs
-    elif model_id == "FABSA":
+    elif model_id == "fabsa":
         outputs = []
         default_current_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
         default_from_date = (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')

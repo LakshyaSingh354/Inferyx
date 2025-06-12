@@ -3,6 +3,7 @@ import time
 import random
 import threading
 import logging
+import string
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -16,9 +17,34 @@ spike_rps_range = (30, 50)
 spike_chance_per_second = 0.1  # ~10% chance per second to spike
 spike_duration_range = (2, 5)  # seconds
 
+def mutate_string(s):
+    s = list(s)
+    mutation_type = random.choice(["insert", "swap", "replace"])
+    if mutation_type == "insert":
+        pos = random.randint(0, len(s))
+        s.insert(pos, random.choice(string.ascii_letters))
+        if random.random() < 0.5:
+            pos = random.randint(0, len(s))
+            s.insert(pos, random.choice(string.ascii_letters))
+    elif mutation_type == "swap" and len(s) > 1:
+        pos = random.randint(0, len(s) - 2)
+        s[pos], s[pos+1] = s[pos+1], s[pos]
+    elif mutation_type == "replace":
+        pos = random.randint(0, len(s) - 1)
+        s[pos] = random.choice(string.ascii_letters)
+    return "".join(s)
+
 def send_request(i):
-    sample_test_inputs = ["test input", "test input 2", "test input 3", "test input 4", "test input 5"]
-    data = {"input": random.choice(sample_test_inputs), "model_id": "mock"} if random.random() < 0.7 else {"input": f"test input {i*random.random()/random.random()}", "model_id": "mock"}
+    sample_test_inputs = ["Google", "Apple", "Microsoft", "Amazon", "Facebook", "Tesla", "Nvidia", "AMD", "Intel", "Samsung", "LG", "Sony", "Panasonic", "Sharp", "Toshiba", "Hitachi", "JBL", "Bose", "Sony", "Panasonic", "Sharp", "Toshiba", "Hitachi", "JBL", "Bose"]
+    base_input = random.choice(sample_test_inputs)
+    # 70%: normal, 20%: mutated (cache miss), 10%: weird float
+    r = random.random()
+    if r < 0.7:
+        data = {"input": base_input, "model_id": "fabsa"}
+    elif r < 0.9:
+        data = {"input": mutate_string(base_input), "model_id": "fabsa"}
+    else:
+        data = {"input": f"{base_input}c{(int(random.random()*10)/random.random())}", "model_id": "fabsa"}
     try:
         response = requests.post(url, json=data, headers=headers, timeout=2)
     except Exception as e:
