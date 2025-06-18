@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: 'inferyx'
     static_configs:
-      - targets: ['app:8080']
+      - targets: ['localhost:8080']

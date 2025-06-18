@@ -11,10 +11,10 @@ logging.basicConfig(level=logging.INFO)
 url = "http://localhost:8000/infer"
 headers = {"Authorization": "Bearer 1234567890"}
 
-total_requests = 1000
+total_requests = 5000
 base_rps_range = (10, 20)  # requests per second
 spike_rps_range = (30, 50)
-spike_chance_per_second = 0.1  # ~10% chance per second to spike
+spike_chance_per_second = 0.5  # ~10% chance per second to spike
 spike_duration_range = (1, 2)  # seconds
 
 def mutate_string(s):
@@ -39,9 +39,9 @@ def send_request(i):
     base_input = random.choice(sample_test_inputs)
     # 70%: normal, 20%: mutated (cache miss), 10%: weird float
     r = random.random()
-    if r < 0.7:
+    if r < 0.5:
         data = {"input": base_input, "model_id": "mock"}
-    elif r < 0.9:
+    elif r < 0.8:
         data = {"input": mutate_string(base_input), "model_id": "mock"}
     else:
         data = {"input": f"{base_input}c{(int(random.random()*10)/random.random())}", "model_id": "mock"}

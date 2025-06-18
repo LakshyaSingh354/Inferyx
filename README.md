@@ -63,13 +63,14 @@ curl -X POST http://localhost:8000/infer \
     -H "Content-Type: application/json" \
     -d '{"input": "your text here", "model_id": "mock"}'
 ```
+> Or make automatic requests using `inferyx.py`. Configure the variables according to the testing parameters.
 
 ### 📊 Monitor the System
 
 - **Prometheus**: [http://localhost:9090](http://localhost:9090)  
 - **Grafana**: [http://localhost:3000](http://localhost:3000)  
     - Login: `admin` / `admin`
-    - Dashboard: *Inferyx Metrics*
+    - Dashboard: [*Inferyx*](http://localhost:3000/d/inferyx/inferyx)
 
 ---
 
@@ -109,8 +110,10 @@ It’s a **simulation of real AI infra problems**:
 
 ## 📸 Screenshots
 
-<insert Grafana dashboard screenshot here>
+![grafana-screenshot](grafana.png)
 
+Dynamic Scaling up and down.
+![dynamic-workers](workers.gif)
 ---
 
 ## 🔧 Configurable Constants
@@ -145,7 +148,7 @@ METRICS_PORT = 8080
 ```
 
 ---
-## Repo Structure
+## 📁 Repo Structure
 ```.
 └── Inferyx/
     ├── api/

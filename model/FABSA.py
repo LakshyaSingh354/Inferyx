@@ -26,8 +26,8 @@ class FABSA:
         options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_EXTENDED
         options.intra_op_num_threads = 4  # Adjust for better CPU utilization if needed
 
-        self.tokenizer = AutoTokenizer.from_pretrained("/app/onnx")
-        self.session = ort.InferenceSession(Path("/app/onnx/model.onnx"), options)
+        self.tokenizer = AutoTokenizer.from_pretrained("onnx")
+        self.session = ort.InferenceSession(Path("onnx/model.onnx"), options)
 
     def fetch_news(self):
         """

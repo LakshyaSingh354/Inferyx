@@ -24,7 +24,7 @@ logger.setLevel(logging.INFO)
 class InferenceFailure(Exception):
     pass
 
-# @cache_inference
+@cache_inference
 def infer_batch(batch_inputs, model_id="mock"):
     """
     Simulates batch inference with latency and occasional failures.
@@ -40,7 +40,7 @@ def infer_batch(batch_inputs, model_id="mock"):
     if model_id == "mock":
         logger.info(f"[Model] Inferring batch of {len(batch_inputs)} inputs for model {model_id}")
         # Simulate variable latency (e.g., 10-20 seconds)
-        processing_time = random.uniform(2, 5)
+        processing_time = random.uniform(10, 15)
         time.sleep(processing_time)
 
         # Simulate GPU-style memory limit (e.g., max 4 inputs)
@@ -48,7 +48,7 @@ def infer_batch(batch_inputs, model_id="mock"):
             raise MemoryError("Simulated OOM: batch too large for mock model")
 
         # Simulate occasional model failure (10% failure chance)
-        if random.random() < 0.1:
+        if random.random() < 0.3:
             raise InferenceFailure("Mock inference failure")
 
         # Mocked output: just echoing uppercase + model_id
