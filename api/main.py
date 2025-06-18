@@ -3,9 +3,11 @@ import logging
 import time
 
 from caching.cache_inference import make_cache_key
+from config import config
 
-PROMETHEUS_MULTIPROC_DIR = "/tmp/prometheus_multiproc"
-os.environ["PROMETHEUS_MULTIPROC_DIR"] = PROMETHEUS_MULTIPROC_DIR
+os.environ["PROMETHEUS_MULTIPROC_DIR"] = config.PROMETHEUS_MULTIPROC_DIR
+
+print("Starting Inferyx!!!")
 
 from fastapi import FastAPI, Request, Response, Depends
 from model.infer import infer_batch, InferenceFailure
@@ -29,7 +31,7 @@ from job_queue.redis_client import get_redis_client
 
 logging.basicConfig(level=logging.INFO)
 
-logging.getLogger("model.infer").setLevel(logging.WARNING)
+logging.getLogger("model.infer").setLevel(logging.INFO)
 logging.getLogger("inferyx").setLevel(logging.INFO)
 logging.getLogger("batch.batching_engine").setLevel(logging.WARNING)
 logging.getLogger("metrics.serve").setLevel(logging.WARNING)

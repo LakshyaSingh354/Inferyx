@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import json
 import os
+import sys
 import time
 import random
 import logging
@@ -8,16 +9,22 @@ import dotenv
 
 from model.FABSA import FABSA
 
+
 dotenv.load_dotenv()
 
 from caching.cache_inference import cache_inference
-
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(process)d %(name)s %(message)s",
+    stream=sys.stdout
+)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class InferenceFailure(Exception):
     pass
 
-@cache_inference
+# @cache_inference
 def infer_batch(batch_inputs, model_id="mock"):
     """
     Simulates batch inference with latency and occasional failures.
@@ -29,6 +36,7 @@ def infer_batch(batch_inputs, model_id="mock"):
     Returns:
         List[str | dict] (mocked outputs)
     """
+
     if model_id == "mock":
         logger.info(f"[Model] Inferring batch of {len(batch_inputs)} inputs for model {model_id}")
         # Simulate variable latency (e.g., 10-20 seconds)

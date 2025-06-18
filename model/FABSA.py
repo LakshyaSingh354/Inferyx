@@ -26,9 +26,8 @@ class FABSA:
         options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_EXTENDED
         options.intra_op_num_threads = 4  # Adjust for better CPU utilization if needed
 
-        # Load the optimized model
-        self.session = ort.InferenceSession(Path("model/onnx/model.onnx"), options)
-        self.tokenizer = AutoTokenizer.from_pretrained("model/onnx")
+        self.tokenizer = AutoTokenizer.from_pretrained("/app/onnx")
+        self.session = ort.InferenceSession(Path("/app/onnx/model.onnx"), options)
 
     def fetch_news(self):
         """
@@ -193,43 +192,7 @@ class FABSA:
 
         return sorted(time_series_sentiment, key=lambda x: x["date"])
 
-dotenv.load_dotenv()
-api_key = os.getenv("NEWS_API")
-entity = "Tesla"
 
-# yesterday's date
-current_date = datetime.today() - timedelta(days=1)
-current_date = current_date.strftime('%Y-%m-%d')
-
-# past 7 days
-from_date = datetime.today() - timedelta(days=7)
-from_date = from_date.strftime('%Y-%m-%d')
-
-# fabsa = FABSA(entity, api_key, batch_size=1, num_news=25, from_date=from_date, to_date=current_date)
-# # start timer
-# start = time.time()
-# results = fabsa.predict_sentiment()
-
-# print("Individual Sentiments:", results["individual_sentiments"])
-# print("Aggregated Sentiments:", results["aggregated_sentiments"])
-# print("Current Sentiment Score:", results["sentiment_score"], "\n\n")
-
-# # plot the sentiment scores over time
-
-# time_series_sentiment = fabsa.historical_sentiment_analysis(30)
-# dates = [data["date"] for data in time_series_sentiment]
-# sentiment_scores = [data["sentiment_score"] for data in time_series_sentiment]
-
-# plt.figure(figsize=(12, 6))
-# plt.plot(dates, sentiment_scores, marker='o')
-# plt.xlabel("Date")
-# plt.ylabel("Sentiment Score")
-# plt.title(f"Sentiment Analysis for {entity} over the past 30 days")
-# plt.xticks(rotation=45)
-# plt.show()
-
-# end = time.time()
-# print("\n\nTime taken:", end - start, "seconds")
 
 
 

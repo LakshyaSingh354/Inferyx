@@ -6,16 +6,13 @@ from workers.worker_loop import worker_loop
 from job_queue.redis_client import get_redis_client
 from metrics.metrics import worker_status_gauge
 
-MAX_WORKERS = 16
-MIN_WORKERS = 4
-JOBS_PER_WORKER = 10
-CHECK_INTERVAL = 5
+from config import config
 
 logger = logging.getLogger(__name__)
 
 def start_worker_pool():
     # Pre-allocate fixed worker IDs
-    worker_ids = list(range(MAX_WORKERS))
+    worker_ids = list(range(config.MAX_WORKERS))
     free_worker_ids = deque(worker_ids)
     active_workers = {}  # worker_id: Process
     redis_client = get_redis_client()
@@ -27,10 +24,10 @@ def start_worker_pool():
     try:
         while True:
             # Calculate desired workers based on queue size
-            queue_size = redis_client.llen("worker_queue")
+            queue_size = redis_client.llen(config.WORKER_QUEUE_KEY)
             desired_workers = min(
-                MAX_WORKERS,
-                max(MIN_WORKERS, (queue_size + JOBS_PER_WORKER - 1) // JOBS_PER_WORKER)
+                config.MAX_WORKERS,
+                max(config.MIN_WORKERS, (queue_size + config.JOBS_PER_WORKER - 1) // config.JOBS_PER_WORKER)
             )
 
             # Spawn new workers if needed
@@ -90,7 +87,7 @@ def start_worker_pool():
                     
                     worker_status_gauge.labels(worker_id=worker_id).set(status_value)
 
-            time.sleep(CHECK_INTERVAL)
+            time.sleep(config.CHECK_INTERVAL)
             
     except KeyboardInterrupt:
         logger.info("[Pool] Shutting down all workers...")

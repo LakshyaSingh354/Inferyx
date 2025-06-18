@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 import json
+import sys
 import time
 import redis
 import logging
@@ -8,7 +9,13 @@ from job_queue.job_store import mark_job_processing, mark_job_done, mark_job_fai
 from job_queue.redis_client import get_redis_client
 from metrics.metrics import inference_latency, jobs_processed_total, jobs_failure_total, worker_queue_size_gauge, worker_status_gauge
 from retry.retry import handle_job_failure
+from config import config
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(process)d %(name)s %(message)s",
+    stream=sys.stdout
+)
 logger = logging.getLogger(__name__)
 
 r = get_redis_client()
@@ -20,16 +27,18 @@ def worker_loop(worker_id):
         try:
             r.set(worker_key, json.dumps({"status": "idle", "timestamp": time.time()}))
             worker_status_gauge.labels(worker_id=worker_id).set(0)  # idle
-            _, batch_raw = r.blpop("worker_queue")
+            _, batch_raw = r.blpop(config.WORKER_QUEUE_KEY)
             r.set(worker_key, json.dumps({"status": "busy", "timestamp": time.time()}))
             worker_status_gauge.labels(worker_id=worker_id).set(1)  # busy
             batch = json.loads(batch_raw)
-
+            print(f"[Worker-{worker_id}] Batch of {len(batch)} jobs received...")
             for job in batch:
                 mark_job_processing(job["request_id"])
+            print(f"[Worker-{worker_id}] Batch of {len(batch)} jobs received")
             inputs = [job["input"] for job in batch]
             model_id = batch[0]["model_id"]
             try:
+                print(f"[Worker-{worker_id}] Inferring batch of {len(inputs)} inputs for model {model_id}")
                 outputs = infer_batch(inputs, model_id)
                 print("OUTPUTS RECEIVED")
                 for job, output in zip(batch, outputs):

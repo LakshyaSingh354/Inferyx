@@ -1,0 +1,22 @@
+# Batching
+INFERENCE_QUEUE_KEY = "inference_queue"
+WORKER_QUEUE_KEY = "worker_queue"
+MAX_BATCH_SIZE = 4
+MAX_WAIT_TIME = 1.0
+
+# Queue
+MAX_QUEUE_SIZE = 500
+
+# Retry
+RETRY_QUEUE_KEY = "retry_queue"
+
+# Workers
+MAX_WORKERS = 16
+MIN_WORKERS = 1
+JOBS_PER_WORKER = 10
+CHECK_INTERVAL = 5
+
+# Metrics
+PROMETHEUS_MULTIPROC_DIR = "/tmp/prometheus_multiproc"
+METRICS_PORT = 8080
+

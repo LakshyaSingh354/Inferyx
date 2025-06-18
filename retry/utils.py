@@ -8,4 +8,3 @@ class RetryJob(BaseModel):
     retry_count: int = 0
     next_retry_time: int = 0
 
-RETRY_QUEUE_KEY = "retry_queue"
