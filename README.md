@@ -1,6 +1,7 @@
-# Inferyx - A Production-Grade AI Inference Engine
+# Inferyx - A Production-Grade AI Inference Engine ⚙️🔥
 
-Inferyx is a high-performance inference system that simulates production-grade AI infrastructure.
+**Inferyx** is a no-BS simulation of a real-world AI inference system — built from the ground up to mirror the insane complexity and pressure of production-scale ML deployment.  
+From batching and retry queues to observability and dynamic worker pools, Inferyx doesn’t play around.
 
 It mimics what happens *after* a `/predict` API is called: job queuing, batching, caching, retrying, worker pooling, and full observability, just like you’d expect in a real world deployment powering millions of requests.
 
@@ -8,6 +9,13 @@ It mimics what happens *after* a `/predict` API is called: job queuing, batching
 
 ---
 
+## ⚡ TL;DR
+
+Inferyx is a containerized AI inference simulation system built for infra engineers.  
+It features async queuing, batching, GPU-style worker pools, retry queues, Prometheus metrics, Grafana dashboards, and dynamic scaling — designed to showcase real-world system design skills under pressure.  
+Built for the kind of AI engineers who know that getting a `/predict` call to survive production is a blood sport.
+
+---
 
 ## 🚀 Features
 
@@ -23,9 +31,50 @@ It mimics what happens *after* a `/predict` API is called: job queuing, batching
 
 ---
 
+## 🎥 Live Demo: Dynamic Worker Scaling
+
+> 👀 Watch Inferyx respond to real-time load:
+> Incoming requests flood the queue → Batches form → Workers scale up dynamically → Throughput spikes → System auto-scales back to idle.
+
+![dynamic-workers](workers.gif)
+> 🔁 Dynamic Worker Scaling in Action:  
+> As the inference load increases, the worker pool automatically scales up to handle the demand — then scales down when idle, saving resources.
+
+---
+
 ## System Architecture
 
+### 🙋 Who Should Look at This?
+
+- **MLEs** looking for real-world systems that go beyond toy deployments  
+- **Backend Engineers** interested in infra-level AI serving  
+- **Hiring Managers** looking for infra-first AI engineers who know their Redis from their retry queues  
+- **Students** trying to learn how *actual AI infrastructure works* in prod
+
 ![system architecture](image.png)
+> 🧠 Inferyx System Architecture: Shows the full inference flow — from `/infer` request to batching, worker pool execution, retry logic, and Redis-backed observability.
+
+
+---
+## 📊 Real-Time Observability
+![grafana-screenshot](grafana.png)
+> 📊 Real-Time Observability: Metrics include queue sizes, latency percentiles, retry dynamics, failures/sec, throughput, and cache effectiveness. Designed to simulate production stress.
+
+
+---
+
+## ❓ Why This Matters
+
+Most AI projects stop at “deploy a model on FastAPI.”  
+Inferyx goes beyond — it asks: what happens **after** the first 1000 clients hammer your system?
+
+- How do you batch without starving?
+- How do you scale workers dynamically?
+- How do you track failures, retries, and throughput in real time?
+
+This is the difference between a Kaggle notebook and real-world ML systems engineering.
+
+---
 
 ## 📦 How to Run (Local Dev)
 
@@ -63,7 +112,7 @@ curl -X POST http://localhost:8000/infer \
     -H "Content-Type: application/json" \
     -d '{"input": "your text here", "model_id": "mock"}'
 ```
-> Or make automatic requests using `inferyx.py`. Configure the variables according to the testing parameters.
+> Or make automatic requests using [`inferyx.py`](https://github.com/LakshyaSingh354/Inferyx/blob/main/inferyx.py). Configure the variables according to the testing parameters.
 
 ### 📊 Monitor the System
 
@@ -96,29 +145,9 @@ curl -X POST http://localhost:8000/infer \
 
 ---
 
-## 🧠 Design Philosophy
-
-Inferyx is not a “deploy a model” demo.  
-It’s a **simulation of real AI infra problems**:
-
-- What happens when 1000 clients hit `/infer`?
-- Can jobs be batched without losing latency SLAs?
-- How are failed jobs retried and monitored?
-- Can you track the system under pressure?
-
----
-
-## 📸 Screenshots
-
-![grafana-screenshot](grafana.png)
-
-Dynamic Scaling up and down.
-![dynamic-workers](workers.gif)
----
-
 ## 🔧 Configurable Constants
 
-Set via `config.py`:
+Set via [`config.py`](https://github.com/LakshyaSingh354/Inferyx/blob/main/config/config.py):
 
 ```python
 # Batching
@@ -200,3 +229,10 @@ METRICS_PORT = 8080
 - [ ] Model Registry Integration
 - [ ] Kubernetes + HPA
 - [ ] Triton Inference Server integration
+
+---
+## Contribute or Learn More
+
+Open issues, ask questions, or suggest features.  
+Let’s build resilient AI infra together!  
+⭐ Star this repo if it helped you or inspired your own system designs.
