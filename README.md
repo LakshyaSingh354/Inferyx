@@ -146,7 +146,7 @@ METRICS_PORT = 8080
 
 ---
 ## Repo Structure
-.
+```.
 └── Inferyx/
     ├── api/
     │   ├── auth.py
@@ -189,7 +189,7 @@ METRICS_PORT = 8080
     ├── startup.sh
     ├── uv.lock
     └── .python-version
-
+```
 ---
 ## 🧾 TODO (Future Work)
 
