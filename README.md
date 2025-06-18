@@ -1,3 +1,8 @@
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/LakshyaSingh354/Inferyx?style=social)](https://github.com/LakshyaSingh354/Inferyx)
+
+
 # Inferyx - A Production-Grade AI Inference Engine ⚙️🔥
 
 **Inferyx** is a no-BS simulation of a real-world AI inference system — built from the ground up to mirror the insane complexity and pressure of production-scale ML deployment.  
@@ -23,6 +28,7 @@ Built for the kind of AI engineers who know that getting a `/predict` call to su
 - 📦 **Batching Engine** that groups jobs for optimal throughput
 - 🔨 **Simulated GPU Worker Pool** (with dynamic scaling up and down)
 - ❌ **Failure Simulation + Retry Queue** with exponential backoff
+- ⚠️ **Rate Limiting** by setting a maximum queue size to prevent abuse and overload.
 - ⚡ **Redis Cache Layer** with hit/miss metrics
 - 📈 **Prometheus + Grafana Monitoring** (latency, retries, throughput, worker state)
 - 🔥 **Load Testing Utility** to simulate thousands of requests
