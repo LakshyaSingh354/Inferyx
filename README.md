@@ -57,7 +57,7 @@ Built for the kind of AI engineers who know that getting a `/predict` call to su
 - **Hiring Managers** looking for infra-first AI engineers who know their Redis from their retry queues  
 - **Students** trying to learn how *actual AI infrastructure works* in prod
 
-![system architecture](image.png)
+![system architecture](architecture.png)
 > 🧠 Inferyx System Architecture: Shows the full inference flow — from `/infer` request to batching, worker pool execution, retry logic, and Redis-backed observability.
 
 
